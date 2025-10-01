@@ -89,7 +89,7 @@ label-studio start
 > ```
 
 > [!NOTE]  
-> Only a few images are included in labels and QR_Dataset folder to show the folder structure. During the execution of ``train.py`` on Original QR_Dataset
+> Only a few images are included in labels and QR_Dataset folder to show the folder structure. During the execution of ``train.py`` on Original QR_Dataset you will get the folder structure specified earlier
 
 
 ## 🚀 Training  
