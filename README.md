@@ -31,7 +31,7 @@ The project prepares a dataset and splits the dataset, trains YOLOv8, and runs i
 │
 ├── outputs/
 │   ├── image_output/        # Annotated inference images
-│   └── submission.json      # Final detection results
+│   └── submission_detection_1.json      # Final detection results
 │
 ├── train.py                 # Training script
 ├── infer.py                 # Inference script
@@ -157,7 +157,7 @@ This will:
 - Load your trained YOLOv8 model  
 - Run inference on all `.jpg` / `.png` images in the input folder  
 - Save annotated images in `outputs/image_output/`  
-- Save detection results in `outputs/submission.json`  
+- Save detection results in `outputs/submission_detection_1.json`  
 
 Example JSON output:  
 ```json
