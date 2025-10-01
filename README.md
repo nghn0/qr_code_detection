@@ -52,6 +52,44 @@ pip install -r requirements.txt
 ```bash
 pip install ultralytics
 ```
+## Manual annotation of training images in QR_Dataset
+
+### 1. Install Label Studio
+Open a terminal and run:
+```bash
+pip install label-studio
+````
+### 2. Start Label Studio
+Launch the tool with:
+```bash
+label-studio start
+````
+
+### 3. Upload Images
+- After Label Studio opens in your browser, create a new project.
+- Upload all images from your dataset.
+
+### 4. Create Custom Labels
+- Add a custom label (e.g., "QR Code") for annotating bounding boxes.
+
+### 5. Annotate Images
+- Open each image in the project.
+- Draw bounding boxes around all QR codes present in the image.
+- Save each annotation.
+
+### 6. Export Annotations in YOLO Format
+- After completing all annotations, export them in YOLO format (```.txt``` files).
+- Each image should have a corresponding ```.txt``` annotation file.
+> [!IMPORTANT]  
+> The ```.txt``` file name must match the image file name.
+> Example
+> ```bash
+> Image: train_images/img001.jpg
+> Annotation: labels/img001.txt
+> ```
+
+> [!NOTE]  
+> Only a few images are included in labels and QR_Dataset folder to show the folder structure. During the execution of ``train.py`` on Original QR_Dataset
 
 
 ## 🚀 Training  
