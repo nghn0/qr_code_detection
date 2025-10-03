@@ -6,7 +6,7 @@ The project prepares a dataset and splits the dataset, trains YOLOv8, and runs i
 
 ---
 
-## Working step of this project
+## Working steps/Workflow of this project
 - Do the necessary environment setup
 - create labels for training images using Label Studio
 - run ```train.py```
