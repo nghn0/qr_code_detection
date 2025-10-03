@@ -5,9 +5,6 @@ import cv2
 import numpy as np
 import re
 
-# ----------------------
-# Paths
-# ----------------------
 MODEL_PATH = "src/model/qr_yolo_model_aug/weights/best.pt"
 IMAGES_FOLDER = "QR_Dataset/test_images"
 OUTPUT_IMAGE_FOLDER = "outputs/image_output"  # single folder
@@ -16,20 +13,13 @@ Path(OUTPUT_IMAGE_FOLDER).mkdir(parents=True, exist_ok=True)
 OUTPUT_JSON_DET = "outputs/submission_detection_1.json"
 OUTPUT_JSON_DEC = "outputs/submission_decoding_2.json"
 
-# ----------------------
-# Load YOLO model
-# ----------------------
+
 print("🔄 Loading YOLO model...")
 model = YOLO(MODEL_PATH)
 
 
-# ----------------------
-# Optimized QR decoder
-# ----------------------
+
 def decode_qr_optimized(original_img, bbox):
-    """
-    Decode QR with preprocessing + padding
-    """
     x1, y1, x2, y2 = map(int, bbox)
     pad = 30
     h, w = original_img.shape[:2]
@@ -42,7 +32,6 @@ def decode_qr_optimized(original_img, bbox):
     if crop.size == 0:
         return ""
 
-    # Resize to minimum 400px
     min_size = 400
     if crop.shape[0] < min_size or crop.shape[1] < min_size:
         scale = max(min_size / crop.shape[0], min_size / crop.shape[1])
@@ -51,7 +40,6 @@ def decode_qr_optimized(original_img, bbox):
     gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
     attempts = []
 
-    # Preprocessing attempts
     attempts.append(gray)
     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
     attempts.append(clahe.apply(gray))
@@ -76,9 +64,7 @@ def decode_qr_optimized(original_img, bbox):
     return ""
 
 
-# ----------------------
-# Classification
-# ----------------------
+
 def classify_qr_type(value):
     """Classify QR content"""
     if not value:
@@ -120,13 +106,9 @@ def classify_qr_type(value):
 
     return "unknown"
 
-
-# ----------------------
-# Process images
-# ----------------------
 image_paths = list(Path(IMAGES_FOLDER).glob("*.jpg")) + list(Path(IMAGES_FOLDER).glob("*.png"))
-results_det = []  # for submission_detection_1.json
-results_dec = []  # for submission_decoding_2.json
+results_det = []  #
+results_dec = [] 
 
 total_detected, total_decoded = 0, 0
 print(f"🔍 Found {len(image_paths)} test images.")
@@ -139,44 +121,31 @@ for img_path in image_paths:
     preds = model.predict(str(img_path), save=False, verbose=False)
     boxes = preds[0].boxes.xyxy.cpu().numpy()
 
-    bboxes_det = []  # for detection json
-    bboxes_dec = []  # for decoding json
+    bboxes_det = []  
+    bboxes_dec = []  
 
     for box in boxes:
         x1, y1, x2, y2 = map(int, box)
         total_detected += 1
         bbox = [x1, y1, x2, y2]
-
-        # Detection output (just bbox)
         bboxes_det.append({"bbox": bbox})
-
-        # Decode with preprocessing + padding
         value = decode_qr_optimized(img, bbox)
         if value:
             total_decoded += 1
         qtype = classify_qr_type(value)
 
         bboxes_dec.append({
-            "bbox": bbox,  # keep SAME bbox as detection
+            "bbox": bbox,
             "value": value,
             "type": qtype
         })
-
-        # Draw annotation (infer.py style, no padding)
         cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.putText(img, f"{value[:15]} ({qtype})", (x1, max(0, y1 - 10)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-    # Add to JSON results
     results_det.append({"image_id": img_path.stem, "qrs": bboxes_det})
     results_dec.append({"image_id": img_path.stem, "qrs": bboxes_dec})
-
-    # Save annotated image (single folder)
     cv2.imwrite(str(Path(OUTPUT_IMAGE_FOLDER) / img_path.name), img)
 
-# ----------------------
-# Save both JSONs
-# ----------------------
 with open(OUTPUT_JSON_DET, "w") as f:
     json.dump(results_det, f, indent=2)
 
